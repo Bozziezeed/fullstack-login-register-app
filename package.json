@@ -1,0 +1,18 @@
+{
+  "name": "fullstack-login-register-app",
+  "version": "1.0.0",
+  "description": "fullstack-login-register-app environment with a database, a back-end and a front-end application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:back": "docker-compose build nestjs-app",
+    "build:front": "docker-compose build nextjs-app",
+    "start:db": "docker-compose up mysql-db",
+    "start:phpmyadmin": "docker-compose up phpmyadmin",
+    "start:back": "docker-compose up nestjs-app --renew-anon-volumes",
+    "start:front": "docker-compose up nextjs-app --renew-anon-volumes",
+    "clean": "docker-compose down -v"
+  },
+  "author": "Netiwit Phuimoontree (netiwit.ph@gmail.com)",
+  "license": "ISC"
+}
