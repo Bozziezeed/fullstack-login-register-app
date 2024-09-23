@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { GET, LOGOUT, POST, USER } from "@/utils/api.util";
 import { useNotificationContext } from "@/utils/NotificationProvider";
 import Image from "next/image";
@@ -12,9 +12,6 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import React from "react";
 import { User } from "@/models/response-model";
 
-type HeaderProps = {
-  setHeight: React.Dispatch<React.SetStateAction<number>>;
-};
 export default function Header() {
   const noti = useNotificationContext();
   const router = useRouter();
@@ -185,8 +182,10 @@ export default function Header() {
                 className={`lg:flex lg:flex-row justify-end gap-8 items-center pt-2 hidden`}
               >
                 <li
-                  className={`relative p-2 hover-border text-blue-800 ${
-                    pathname === "/home" && "border-text-blue-500"
+                  className={`relative p-2  text-blue-800 ${
+                    pathname === "/home"
+                      ? "border-y-2 border-blue-500"
+                      : "hover-border"
                   }`}
                 >
                   <Link href="#" className="text-[18px]">
@@ -369,7 +368,10 @@ export default function Header() {
             <div className="border-b-2 border-gray-200 w-full" />
 
             <li className="relative p-2 ">
-              <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+              <div
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 hover:cursor-pointer"
+              >
                 <svg
                   className="absolute w-12 h-12 text-gray-400 -left-1"
                   fill="currentColor"
@@ -384,6 +386,28 @@ export default function Header() {
                 </svg>
               </div>
             </li>
+
+            <div
+              className={`w-full flex flex-col gap-2 items-center overflow-hidden transition-all duration-[1s] ease-in-out transform ${
+                isProfileOpen
+                  ? "max-h-[500px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+              style={{ transitionProperty: "max-height, opacity" }}
+            >
+              <li className="text-[18px] relative p-2  text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
+                User: {user?.name}
+              </li>
+              <div className="border-b-2 border-gray-200 w-full" />
+              <li className="text-[18px] relative p-2  text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
+                Email: {user?.email}
+              </li>
+              <div className="border-b-2 border-gray-200 w-full" />
+              <li className="text-[18px] relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
+                <button onClick={onLogout}>Log out</button>
+              </li>
+            </div>
+            <div className="border-b-2 border-gray-200 w-full" />
           </ul>
           {/* Language menu on mobile size */}
 

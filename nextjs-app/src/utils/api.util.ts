@@ -2,14 +2,14 @@ import axios from "axios";
 
 const baseURL = `http://localhost:${process.env.NEXT_PUBLIC_SERVER_PORT}`;
 
-const api = axios.create({
-  baseURL: baseURL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 300000,
-  paramsSerializer: { indexes: null },
-});
+// const api = axios.create({
+//   baseURL: baseURL,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+//   timeout: 300000,
+//   paramsSerializer: { indexes: null },
+// });
 
 /**
  * ฟังก์ชั่นสำหรับ ดึงข้อมูล
@@ -21,7 +21,7 @@ export const GET = async (path: string, param = {}) => {
   try {
     console.log("Calling GET on :>> ", path);
 
-    const response = await api.get(path, {
+    const response = await axios.get(path, {
       params: param,
       withCredentials: true,
     });
@@ -50,7 +50,7 @@ export const POST = async (path: string, param = {}, data: object) => {
   try {
     console.log("Calling POST on :>> ", path);
 
-    const response = await api.post(path, data, {
+    const response = await axios.post(path, data, {
       params: param,
       withCredentials: true,
     });

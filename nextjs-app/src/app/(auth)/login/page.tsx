@@ -1,37 +1,56 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { Base_Response } from "@/models/response-model";
+import { extractError } from "@/utils";
 import { LOGIN, POST } from "@/utils/api.util";
 import { useNotificationContext } from "@/utils/NotificationProvider";
+import { ErrorMessage } from "@hookform/error-message";
+import { AxiosError } from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useForm } from "react-hook-form";
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 const Login = () => {
   const noti = useNotificationContext();
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  /** variables */
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (formData: FormValues) => {
     try {
-      // send login request
-      const response = (await POST(
+      const res = (await POST(
         LOGIN,
         {},
         {
-          email: "mail1@mail.com",
-          password: "@Pass1234",
+          email: formData.email,
+          password: formData.password,
         }
       )) as Base_Response;
 
-      if (response.success) {
-        noti.success("Login successful user: " + response.data?.name);
+      const { success, data } = res;
+      if (success) {
+        noti.success(`${data?.name} : Logged in successfully!`);
         router.push("/home");
-      } else {
-        noti.error("Invalid email or password");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err: unknown) {
+      noti.error(extractError(err));
     }
   };
 
@@ -55,7 +74,7 @@ const Login = () => {
           action="#"
           method="POST"
           className="space-y-6"
-          onSubmit={(e) => handleSubmit(e)}
+          onSubmit={handleSubmit(onSubmit)}
         >
           <div>
             <label
@@ -67,11 +86,29 @@ const Login = () => {
             <div className="mt-2">
               <input
                 id="email"
-                name="email"
                 type="email"
-                required
                 autoComplete="email"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
+                ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
+                sm:text-sm sm:leading-6"
+                {...register("email", {
+                  required: {
+                    value: true,
+                    message: "Email is required",
+                  },
+                  validate: {
+                    isValidPassword: (value) =>
+                      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+                      "Email is not valid",
+                  },
+                })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name="email"
+                render={({ message }) => (
+                  <p className="text-red-500">* {message}</p>
+                )}
               />
             </div>
           </div>
@@ -88,11 +125,40 @@ const Login = () => {
             <div className="mt-2">
               <input
                 id="password"
-                name="password"
                 type="password"
-                required
                 autoComplete="current-password"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                {...register("password", {
+                  required: {
+                    value: true,
+                    message: "Password is required",
+                  },
+
+                  validate: {
+                    minLength: (value: string) =>
+                      value.length >= 8 ||
+                      "Password must be at least 8 characters long.",
+                    hasUppercase: (value: string) =>
+                      /[A-Z]/.test(value) ||
+                      "Password must contain at least one uppercase letter.",
+                    hasLowercase: (value: string) =>
+                      /[a-z]/.test(value) ||
+                      "Password must contain at least one lowercase letter.",
+                    hasNumber: (value: string) =>
+                      /\d/.test(value) ||
+                      "Password must contain at least one number.",
+                    hasSpecialChar: (value: string) =>
+                      /[\W_]/.test(value) ||
+                      "Password must contain at least one special character.",
+                  },
+                })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name="password"
+                render={({ message }) => (
+                  <p className="text-red-500">* {message}</p>
+                )}
               />
             </div>
           </div>
