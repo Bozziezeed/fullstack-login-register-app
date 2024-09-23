@@ -47,7 +47,7 @@ const Login = () => {
       const { success, data } = res;
       if (success) {
         noti.success(`${data?.name} : Logged in successfully!`);
-        router.push("/home");
+        router.refresh();
       }
     } catch (err: unknown) {
       noti.error(extractError(err));
@@ -133,7 +133,6 @@ const Login = () => {
                     value: true,
                     message: "Password is required",
                   },
-
                   validate: {
                     minLength: (value: string) =>
                       value.length >= 8 ||

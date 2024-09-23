@@ -11,6 +11,7 @@ import { FaPhone } from "react-icons/fa6";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import React from "react";
 import { User } from "@/models/response-model";
+import { extractError } from "@/utils";
 
 export default function Header() {
   const noti = useNotificationContext();
@@ -48,9 +49,8 @@ export default function Header() {
       const res = await GET(USER, {});
       const { data } = res;
       setUser(data);
-    } catch (e) {
-      console.log(e);
-      router.push("/login");
+    } catch (err: unknown) {
+      noti.error(extractError(err));
     }
   };
 
@@ -59,9 +59,9 @@ export default function Header() {
       const res = await POST(LOGOUT, {}, {});
       console.log(res);
       noti.success("Logged out successfully");
-      router.push("/login");
-    } catch (e) {
-      console.log(e);
+      router.refresh();
+    } catch (err: unknown) {
+      noti.error(extractError(err));
     }
   };
 
