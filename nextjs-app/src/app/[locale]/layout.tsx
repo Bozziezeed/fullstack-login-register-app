@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Metadata } from "next";
-
 import "./globals.css";
 import { NotificationProvider } from "@/utils/NotificationProvider";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import Layout from "@/components/Layout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,13 +21,11 @@ export default async function LocaleLayout({
 
   return (
     <NotificationProvider>
-      <html lang={locale}>
-        <body className=" bg-blue-50">
-          <NextIntlClientProvider messages={messages}>
-            <Layout>{children}</Layout>
-          </NextIntlClientProvider>
-        </body>
-      </html>
+      <div className=" bg-blue-50">
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </div>
     </NotificationProvider>
   );
 }

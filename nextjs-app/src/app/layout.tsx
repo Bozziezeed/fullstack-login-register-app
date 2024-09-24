@@ -1,8 +1,4 @@
-"use client";
-
 import "./globals.css";
-// import { useLocale } from "next-intl";
-
 export default function RootLayout({
   children,
 }: Readonly<{
