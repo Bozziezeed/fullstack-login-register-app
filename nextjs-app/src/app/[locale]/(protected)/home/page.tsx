@@ -25,7 +25,7 @@ const Home = () => {
       setUser(data);
     } catch (err: unknown) {
       noti.error(extractError(err));
-      router.push("/login");
+      router.push(`/login`);
     }
   };
   if (user) {

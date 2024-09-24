@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { LOGOUT, POST } from "@/utils/api.util";
 import { useNotificationContext } from "@/utils/NotificationProvider";
 import Image from "next/image";
@@ -12,6 +12,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import React from "react";
 import { User } from "@/models/response-model";
 import { extractError } from "@/utils";
+import { useLocale, useTranslations } from "next-intl";
 
 type HeaderProps = {
   user: User;
@@ -21,13 +22,24 @@ export default function Header({ user }: HeaderProps) {
   const noti = useNotificationContext();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("Header");
 
+  const [isPending, startTransition] = useTransition();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [language, setLanguage] = useState<"TH" | "EN" | "CH">("TH");
+  // const [language, setLanguage] = useState<"TH" | "EN" | "CH">("TH");
   const [isAtTop, setIsAtTop] = useState(true);
+
+  const localActive = useLocale();
+
+  const onSelectChange = (path: string) => {
+    const nextLocale = path;
+    startTransition(() => {
+      router.replace(`/${nextLocale}`);
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,7 +60,7 @@ export default function Header({ user }: HeaderProps) {
       const res = await POST(LOGOUT, {}, {});
       console.log(res);
       noti.success("Logged out successfully");
-      router.push("/login");
+      router.push(`/${localActive}/login`);
     } catch (err: unknown) {
       noti.error(extractError(err));
     }
@@ -86,7 +98,10 @@ export default function Header({ user }: HeaderProps) {
                 >
                   <ul className="flex flex-row gap-4">
                     <li>
-                      <button>
+                      <button
+                        onClick={() => onSelectChange("en/home")}
+                        disabled={isPending}
+                      >
                         <Image
                           alt="flag-en"
                           src="/images/flag-en.png"
@@ -96,20 +111,13 @@ export default function Header({ user }: HeaderProps) {
                       </button>
                     </li>
                     <li>
-                      <button>
+                      <button
+                        onClick={() => onSelectChange("th/home")}
+                        disabled={isPending}
+                      >
                         <Image
                           alt="flag-th"
                           src="/images/flag-th.png"
-                          width={16}
-                          height={11}
-                        />
-                      </button>
-                    </li>
-                    <li>
-                      <button>
-                        <Image
-                          alt="flag-ch"
-                          src="/images/flag-ch.png"
                           width={16}
                           height={11}
                         />
@@ -150,7 +158,7 @@ export default function Header({ user }: HeaderProps) {
                   onClick={toggleLanguage}
                   className="text-xl text-blue-500 p-2"
                 >
-                  {language}
+                  {localActive}
                 </button>
                 <button
                   onClick={toggleMenu}
@@ -172,18 +180,18 @@ export default function Header({ user }: HeaderProps) {
               >
                 <li
                   className={`relative p-2  text-blue-800 ${
-                    pathname === "/home"
+                    pathname === `${localActive}/home`
                       ? "border-y-2 border-blue-500"
                       : "hover-border"
                   }`}
                 >
                   <Link href="#" className="text-[18px]">
-                    Home
+                    {t("Home")}
                   </Link>
                 </li>
                 <li className="relative p-2 hover-border text-blue-800">
                   <Link href="#" className="text-[18px]">
-                    About Us
+                    {t("About_us")}
                   </Link>
                 </li>
                 <li
@@ -193,7 +201,7 @@ export default function Header({ user }: HeaderProps) {
                 >
                   <div className="  flex flex-row gap-2 items-center ">
                     <Link href="#" className="text-[18px] dropdown-title">
-                      Services
+                      {t("Services")}
                     </Link>
 
                     {isDropdownOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
@@ -211,22 +219,22 @@ export default function Header({ user }: HeaderProps) {
                         className="dropdown-menu absolute bg-white shadow-lg p-4 w-[200px] mt-2 rounded-xl"
                         onMouseEnter={() => setIsDropdownOpen(true)}
                       >
-                        <li>Auditing</li>
-                        <li>Accounting</li>
-                        <li>Tax Services</li>
-                        <li>Payroll</li>
+                        <li>{t("Auditing")}</li>
+                        <li>{t("Accounting")}</li>
+                        <li>{t("Tax_Services")}</li>
+                        <li>{t("Payroll")}</li>
                       </ul>
                     )}
                   </div>
                 </li>
                 <li className="relative p-2 hover-border text-blue-800">
                   <Link href="#" className="text-[18px]">
-                    Blog
+                    {t("Blog")}
                   </Link>
                 </li>
                 <li className="py-2 px-8 border-y-2 border-transparent text-white bg-green-500 hover:bg-green-300 rounded-full">
                   <Link href="#" className="text-[18px]">
-                    Contact
+                    {t("Contact_Us")}
                   </Link>
                 </li>
 
@@ -249,8 +257,9 @@ export default function Header({ user }: HeaderProps) {
                       ></path>
                     </svg>
                   </div>
+
                   <div
-                    className={`transition-all duration-[0.3s] ease-in-out transform ${
+                    className={`transition-all absolute right-[200px] duration-[0.3s] ease-in-out transform ${
                       isProfileOpen
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-4 pointer-events-none"
@@ -258,13 +267,17 @@ export default function Header({ user }: HeaderProps) {
                   >
                     {isProfileOpen && (
                       <ul
-                        className="dropdown-menu absolute bg-white shadow-lg p-4 w-[200px] mt-2 rounded-xl"
+                        className="dropdown-menu absolute  bg-white shadow-lg p-4 w-[200px] mt-2 rounded-xl"
                         onMouseEnter={() => setIsProfileOpen(true)}
                       >
-                        <li>User: {user?.name}</li>
-                        <li>Email: {user?.email}</li>
                         <li>
-                          <button onClick={onLogout}>Log out</button>
+                          {t("Name")}: {user?.name}
+                        </li>
+                        <li>
+                          {t("Email")}: {user?.email}
+                        </li>
+                        <li>
+                          <button onClick={onLogout}>{t("Log out")}</button>
                         </li>
                       </ul>
                     )}
@@ -284,14 +297,14 @@ export default function Header({ user }: HeaderProps) {
           >
             <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform ">
               <Link href="#" className="text-[18px]">
-                Home
+                {t("Home")}
               </Link>
             </li>
             <div className="border-b-2 border-gray-200 w-full" />
 
             <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
               <Link href="#" className="text-[18px]">
-                About Us
+                {t("About_us")}
               </Link>
             </li>
             <div className="border-b-2 border-gray-200 w-full" />
@@ -299,7 +312,7 @@ export default function Header({ user }: HeaderProps) {
             <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
               <div className="flex flex-row gap-2 items-center">
                 <Link href="#" className="text-[18px] dropdown-title">
-                  Services
+                  {t("Services")}
                 </Link>
 
                 <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
@@ -318,25 +331,25 @@ export default function Header({ user }: HeaderProps) {
             >
               <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
                 <Link href="#" className="text-[18px]">
-                  Auditing
+                  {t("Auditing")}
                 </Link>
               </li>
               <div className="border-b-2 border-gray-200 w-full" />
               <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
                 <Link href="#" className="text-[18px]">
-                  Accounting
+                  {t("Accounting")}
                 </Link>
               </li>
               <div className="border-b-2 border-gray-200 w-full" />
               <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
                 <Link href="#" className="text-[18px]">
-                  Tax Services
+                  {t("Tax_Services")}
                 </Link>
               </li>
               <div className="border-b-2 border-gray-200 w-full" />
               <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
                 <Link href="#" className="text-[18px]">
-                  Payroll
+                  {t("Payroll")}
                 </Link>
               </li>
             </div>
@@ -344,14 +357,14 @@ export default function Header({ user }: HeaderProps) {
             <div className="border-b-2 border-gray-200 w-full" />
             <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
               <Link href="#" className="text-[18px]">
-                Blog
+                {t("Blog")}
               </Link>
             </li>
             <div className="border-b-2 border-gray-200 w-full" />
 
             <li className="relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
               <Link href="#" className="text-[18px]">
-                Contact Us
+                {t("Contact_Us")}
               </Link>
             </li>
             <div className="border-b-2 border-gray-200 w-full" />
@@ -385,15 +398,15 @@ export default function Header({ user }: HeaderProps) {
               style={{ transitionProperty: "max-height, opacity" }}
             >
               <li className="text-[18px] relative p-2  text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
-                User: {user?.name}
+                {t("Name")}: {user?.name}
               </li>
               <div className="border-b-2 border-gray-200 w-full" />
               <li className="text-[18px] relative p-2  text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
-                Email: {user?.email}
+                {t("Email")}: {user?.email}
               </li>
               <div className="border-b-2 border-gray-200 w-full" />
               <li className="text-[18px] relative p-2 hover:text-green-500 text-blue-800 transition-all duration-[0.5s] ease-in-out transform">
-                <button onClick={onLogout}>Log out</button>
+                <button onClick={onLogout}>{t("Log out")}</button>
               </li>
             </div>
             <div className="border-b-2 border-gray-200 w-full" />
@@ -407,7 +420,10 @@ export default function Header({ user }: HeaderProps) {
                } lg:block`}
           >
             <li>
-              <button>
+              <button
+                onClick={() => onSelectChange("en/home")}
+                disabled={isPending}
+              >
                 <Image
                   alt="flag-en"
                   src="/images/flag-en.png"
@@ -419,7 +435,10 @@ export default function Header({ user }: HeaderProps) {
             <div className="border-b-2 border-gray-200 w-full" />
 
             <li>
-              <button>
+              <button
+                onClick={() => onSelectChange("th/home")}
+                disabled={isPending}
+              >
                 <Image
                   alt="flag-th"
                   src="/images/flag-th.png"
@@ -429,16 +448,6 @@ export default function Header({ user }: HeaderProps) {
               </button>
             </li>
             <div className="border-b-2 border-gray-200 w-full" />
-            <li>
-              <button>
-                <Image
-                  alt="flag-ch"
-                  src="/images/flag-ch.png"
-                  width={32}
-                  height={32}
-                />
-              </button>
-            </li>
           </ul>
         </div>
       </div>

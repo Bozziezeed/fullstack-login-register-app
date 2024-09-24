@@ -1,63 +1,89 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { getCookie } from "@/app/action";
 import { Base_Response } from "@/models/response-model";
 import { extractError } from "@/utils";
-import { POST, REGISTER } from "@/utils/api.util";
+import { LOGIN, POST } from "@/utils/api.util";
 import { useNotificationContext } from "@/utils/NotificationProvider";
 import { ErrorMessage } from "@hookform/error-message";
+import { useLocale } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type FormValues = {
-  name: string;
   email: string;
   password: string;
-  re_password: string;
 };
 
-const Register = () => {
+const Login = () => {
   const noti = useNotificationContext();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const localActive = useLocale();
+
+  const getJWT = async () => {
+    try {
+      const jwt = await getCookie("jwt");
+      if (jwt) {
+        setIsAuthenticated(true);
+        router.push(`/${localActive}/home`);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getJWT();
+  }, []);
 
   /** variables */
   const {
     register,
     handleSubmit,
     formState: { errors },
-    control,
   } = useForm<FormValues>({
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      re_password: "",
     },
   });
 
   const onSubmit = async (formData: FormValues) => {
     try {
       const res = (await POST(
-        REGISTER,
+        LOGIN,
         {},
         {
-          name: formData.name,
           email: formData.email,
           password: formData.password,
-          re_password: formData.re_password,
         }
       )) as Base_Response;
 
-      const { success } = res;
+      const { success, data } = res;
       if (success) {
-        noti.success(`Register successfully!`);
-        router.push("/login");
+        noti.success(`${data?.name} : Logged in successfully!`);
+        router.push(`/${localActive}/home`);
       }
     } catch (err: unknown) {
       noti.error(extractError(err));
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-full  flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -70,7 +96,7 @@ const Register = () => {
           height={40}
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Signup
+          Login to you account
         </h2>
       </div>
 
@@ -86,35 +112,6 @@ const Register = () => {
               htmlFor="email"
               className="block text-sm font-medium leading-6 text-gray-900"
             >
-              Name
-            </label>
-            <div className="mt-2">
-              <input
-                id="name"
-                type="text"
-                autoComplete="additional-name"
-                className="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                {...register("name", {
-                  required: {
-                    value: true,
-                    message: "Name is required",
-                  },
-                })}
-              />
-              <ErrorMessage
-                errors={errors}
-                name="name"
-                render={({ message }) => (
-                  <p className="text-red-500">* {message}</p>
-                )}
-              />
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
               Email address
             </label>
             <div className="mt-2">
@@ -123,8 +120,8 @@ const Register = () => {
                 type="email"
                 autoComplete="email"
                 className="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
-                ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
-                sm:text-sm sm:leading-6"
+                  ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
+                  sm:text-sm sm:leading-6"
                 {...register("email", {
                   required: {
                     value: true,
@@ -153,7 +150,7 @@ const Register = () => {
                 htmlFor="password"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Create Password
+                Password
               </label>
             </div>
             <div className="mt-2">
@@ -167,7 +164,6 @@ const Register = () => {
                     value: true,
                     message: "Password is required",
                   },
-
                   validate: {
                     minLength: (value: string) =>
                       value.length >= 8 ||
@@ -198,43 +194,6 @@ const Register = () => {
           </div>
 
           <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="c_password"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Confirm Password
-              </label>
-            </div>
-            <div className="mt-2">
-              <input
-                id="re_password"
-                type="password"
-                autoComplete="current-password"
-                className="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                {...register("re_password", {
-                  required: {
-                    value: true,
-                    message: "Confirm password is required",
-                  },
-                  validate: {
-                    matchPassword: (value: string) =>
-                      value === control._formValues.password ||
-                      "Confirm password must match password",
-                  },
-                })}
-              />
-              <ErrorMessage
-                errors={errors}
-                name="re_password"
-                render={({ message }) => (
-                  <p className="text-red-500">* {message}</p>
-                )}
-              />
-            </div>
-          </div>
-
-          <div>
             <button
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -245,12 +204,12 @@ const Register = () => {
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Already have an account?{" "}
+          Not a member?{" "}
           <Link
-            href="/login"
+            href={`/${localActive}/register`}
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
           >
-            Login
+            Signup
           </Link>
         </p>
       </div>
@@ -258,4 +217,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

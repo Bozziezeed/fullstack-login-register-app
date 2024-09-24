@@ -3,8 +3,10 @@ import Link from "next/link";
 import { FaFacebookF } from "react-icons/fa";
 import { MdOutlineMail } from "react-icons/md";
 import { FaPhone } from "react-icons/fa6";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const f = useTranslations("Footer");
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -16,34 +18,31 @@ export default function Footer() {
       <footer className="max-w-[1280px] mx-auto p-8 flex flex-col gap-16 ">
         <div className="flex flex-col lg:flex-row  gap-20 justify-between">
           <ul className="flex flex-col gap-4 ">
-            <p className="text-[20px] font-extralight">Overview</p>
+            <p className="text-[20px] font-extralight"> {f("overview")}</p>
             <li>
               <Link href={"#"} className="text-[18px] font-medium">
-                Services
+                {f("service")}
               </Link>
             </li>
             <li>
               <Link href={"#"} className="text-[18px] font-medium">
-                Who we are
+                {f("who")}
               </Link>
             </li>
             <li>
               <Link href={"#"} className="text-[18px] font-medium">
-                Article
+                {f("article")}
               </Link>
             </li>
             <li>
               <Link href={"#"} className="text-[18px] font-medium">
-                Privacy Policy
+                {f("privacy")}
               </Link>
             </li>
           </ul>
           <div className="flex flex-col gap-4  lg:max-w-[277px]">
-            <p className="text-[20px] font-extralight">Business Info</p>
-            <p className="text-[18px] font-normal">
-              Empire Tower Building, 47th Floor, Unit 4703, Sathon Tai Road, Yan
-              Nawa Sub-district, Sathon District, Bangkok
-            </p>
+            <p className="text-[20px] font-extralight"> {f("business")}</p>
+            <p className="text-[18px] font-normal">{f("address")}</p>
             <button className="bg-gray-200 p-4 rounded-full text-[18px] hover:bg-green-500 font-medium hover:text-white">
               (66) 0000-0000
             </button>

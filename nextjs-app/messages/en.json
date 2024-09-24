@@ -1,0 +1,75 @@
+{
+  "Header": {
+    "Home": "Home",
+    "About_us": "About Us",
+    "Services": "Services",
+    "Auditing": "Auditing",
+    "Accounting": "Accounting",
+    "Tax_Services": "Tax Services",
+    "Payroll": "Payroll",
+    "Blog": "Blog",
+    "Contact_Us": "Contact Us",
+    "Name": "Name",
+    "Email": "Email",
+    "Log out": "Log out"
+  },
+  "Section_1": {
+    "Accounting": "Accounting & Taxes",
+    "Solutions": "Solutions to Grow",
+    "Your_Business": "Your Business",
+    "TAX_AUDIT_ACCOUNTING_LEGAL": "TAX | AUDIT | ACCOUNTING | LEGAL",
+    "Text_1": "MyCompany is an international audit, tax and advisory firm. We are",
+    "Text_2": "committed to providing exceoptional and tailored services in",
+    "Text_3": "audit, accounting, consulting and legal services for our clients"
+  },
+  "Section_2": {
+    "title_1": "When it comes to accounts you can count on us.",
+    "About_us": "About_us",
+    "Connect": "Connect",
+    "Text_1": " , We are an accounting firm that is legally licensed by the Federation of Accounting Professions. Since its establishment, we committed to providing services with excellence in the accounting & taxes field, modernity, and integrity. Our company has been cooperating with the team in various fields so that we can advise and provide valued services to customers in a vast industry.",
+    "Innovation": "INNOVATION",
+    "Text_2": "– Continuously improve the skills and knowledge of the team",
+    "Emapythy": "EMPATHY",
+    "Text_3": "Understanding customers in order to deliver the right services to customer",
+    "Excellence": "EXCELLENCE",
+    "Text_4": "– Responsible for our job until reaching the goal set",
+    "Text_5": "We are so glad that we can use our expertise in accounting and taxto maximize the benefits for our clients. We believe in supporting and empowering our clients to grow sustainably over the long term."
+  },
+  "Section_3": {
+    "title_1": "Solution for every busioness needs.",
+    "Text_1": "We provide a full range of accounting, auditing, and tax services.We serve a group of clients from small to large companies invarious industries.",
+    "Auditing service": "Auditing service",
+    "Text_2": "We provide qualified auditing services to ensure that your financial statements have been prepared correctly",
+    "Accounting service": "INNOVATION",
+    "Text_3": "We provide comprehensive accounting services for you so that you can maximize your time to run your business efficiently.",
+    "Tax service": "EMPATHY",
+    "Text_4": "Tax planning is the key to reducing your tax burden. So that you can create maximum profit for the organization."
+  },
+  "Section_4": {
+    "title_1": "No matter who you are, we've got waht you need.",
+    "Accounting Firms": "Accounting Firms",
+    "Text_1": "We have been serving a hundred Accounting firms in Thailand for assurance service.",
+    "Local Entrepreneurs": "Local Entrepreneurs",
+    "Text_2": "Over 20 years of experience in accounting field, we will help you to boost your business the blast.",
+    "Multinational Corporation": "Multinational Corporation",
+    "Text_3": "A number of Large Multinational Corporation engage us for professional advisory."
+  },
+  "Section_5": {
+    "title_1": "Get a personal consultation.",
+    "Office": "Office",
+    "Sathorn, Bangkok": "Sathorn, Bangkok",
+    "Thailand, 10120": "Thailand, 10120",
+    "Contact": "Contact",
+    "Open Hours": "Open Hours",
+    "Monday": "Monday - Saturdat : 8am - 6pm"
+  },
+  "Footer": {
+    "overview": "Overview",
+    "service": "Services",
+    "who": "Who we are",
+    "article": "Article",
+    "privacy": "Privacy Policy",
+    "business": "Business Info",
+    "address": "Empire Tower Building, 47th Floor, Unit 4703, Sathon Tai Road, Yan Nawa Sub-district, Sathon District, Bangkok"
+  }
+}
