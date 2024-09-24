@@ -8,10 +8,6 @@ import { IoDocumentTextOutline, IoMailOutline } from "react-icons/io5";
 import { FaRegHospital, FaRegClock, FaArrowCircleRight } from "react-icons/fa";
 import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
 
-type SectionProps = {
-  height: number;
-};
-
 export default function Section() {
   return (
     <section className="w-full text-black mt-[132px] lg:mt-[186px]">

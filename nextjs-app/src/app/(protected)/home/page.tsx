@@ -1,18 +1,43 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./home.css";
 import { ContactButtons, Footer, Header, Section } from "@/components";
+import { useNotificationContext } from "@/utils/NotificationProvider";
+import { useRouter } from "next/navigation";
+import { extractError } from "@/utils";
+import { GET, USER } from "@/utils/api.util";
+import { User } from "@/models/response-model";
 
 const Home = () => {
-  return (
-    <>
-      <Header />
-      <Section />
-      <ContactButtons />
-      <Footer />
-    </>
-  );
+  const noti = useNotificationContext();
+  const router = useRouter();
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    try {
+      const res = await GET(USER, {});
+      const { data } = res;
+      setUser(data);
+    } catch (err: unknown) {
+      noti.error(extractError(err));
+      router.push("/login");
+    }
+  };
+  if (user) {
+    return (
+      <>
+        <Header user={user} />
+        <Section />
+        <ContactButtons />
+        <Footer />
+      </>
+    );
+  }
 };
 
 export default Home;

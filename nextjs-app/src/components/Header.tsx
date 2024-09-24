@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { GET, LOGOUT, POST, USER } from "@/utils/api.util";
+import { LOGOUT, POST } from "@/utils/api.util";
 import { useNotificationContext } from "@/utils/NotificationProvider";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,11 @@ import React from "react";
 import { User } from "@/models/response-model";
 import { extractError } from "@/utils";
 
-export default function Header() {
+type HeaderProps = {
+  user: User;
+};
+
+export default function Header({ user }: HeaderProps) {
   const noti = useNotificationContext();
   const router = useRouter();
   const pathname = usePathname();
@@ -24,7 +28,6 @@ export default function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [language, setLanguage] = useState<"TH" | "EN" | "CH">("TH");
   const [isAtTop, setIsAtTop] = useState(true);
-  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,26 +43,12 @@ export default function Header() {
     };
   }, []);
 
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  const getUser = async () => {
-    try {
-      const res = await GET(USER, {});
-      const { data } = res;
-      setUser(data);
-    } catch (err: unknown) {
-      noti.error(extractError(err));
-    }
-  };
-
   const onLogout = async () => {
     try {
       const res = await POST(LOGOUT, {}, {});
       console.log(res);
       noti.success("Logged out successfully");
-      router.refresh();
+      router.push("/login");
     } catch (err: unknown) {
       noti.error(extractError(err));
     }

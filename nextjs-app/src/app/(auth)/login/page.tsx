@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { getCookie } from "@/app/action";
 import { Base_Response } from "@/models/response-model";
 import { extractError } from "@/utils";
 import { LOGIN, POST } from "@/utils/api.util";
@@ -9,7 +11,7 @@ import { AxiosError } from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type FormValues = {
@@ -20,6 +22,26 @@ type FormValues = {
 const Login = () => {
   const noti = useNotificationContext();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const getJWT = async () => {
+    try {
+      const jwt = await getCookie("jwt");
+      if (jwt) {
+        setIsAuthenticated(true);
+        router.push("/home");
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getJWT();
+  }, []);
 
   /** variables */
   const {
@@ -47,12 +69,20 @@ const Login = () => {
       const { success, data } = res;
       if (success) {
         noti.success(`${data?.name} : Logged in successfully!`);
-        router.refresh();
+        router.push("/home");
       }
     } catch (err: unknown) {
       noti.error(extractError(err));
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-full  flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -89,8 +119,8 @@ const Login = () => {
                 type="email"
                 autoComplete="email"
                 className="px-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 
-                ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
-                sm:text-sm sm:leading-6"
+                  ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
+                  sm:text-sm sm:leading-6"
                 {...register("email", {
                   required: {
                     value: true,
