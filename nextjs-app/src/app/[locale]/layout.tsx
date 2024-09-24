@@ -4,6 +4,7 @@ import "./globals.css";
 import { NotificationProvider } from "@/utils/NotificationProvider";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import Layout from "@/components/Layout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,12 +19,13 @@ export default async function LocaleLayout({
   params: { locale: string };
 }) {
   const messages = await getMessages();
+
   return (
     <NotificationProvider>
       <html lang={locale}>
         <body className=" bg-blue-50">
           <NextIntlClientProvider messages={messages}>
-            {children}
+            <Layout>{children}</Layout>
           </NextIntlClientProvider>
         </body>
       </html>

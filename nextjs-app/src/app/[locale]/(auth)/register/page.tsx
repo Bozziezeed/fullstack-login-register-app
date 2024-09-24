@@ -54,7 +54,7 @@ const Register = () => {
       const { success } = res;
       if (success) {
         noti.success(`Register successfully!`);
-        router.push("/login");
+        router.push(`/${localActive}/login`);
       }
     } catch (err: unknown) {
       noti.error(extractError(err));

@@ -8,11 +8,13 @@ import { useRouter } from "next/navigation";
 import { extractError } from "@/utils";
 import { GET, USER } from "@/utils/api.util";
 import { User } from "@/models/response-model";
+import { useLocale } from "next-intl";
 
 const Home = () => {
   const noti = useNotificationContext();
   const router = useRouter();
   const [user, setUser] = useState<User>();
+  const localActive = useLocale();
 
   useEffect(() => {
     getUser();
@@ -25,7 +27,7 @@ const Home = () => {
       setUser(data);
     } catch (err: unknown) {
       noti.error(extractError(err));
-      router.push(`/login`);
+      router.push(`/${localActive}/login`);
     }
   };
   if (user) {
